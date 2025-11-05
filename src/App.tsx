@@ -12,6 +12,7 @@ function App() {
   const [drawComplete, setDrawComplete] = useState(false)
   const [scatterPositions, setScatterPositions] = useState<Map<number, { x: number; y: number; rotation: number }>>(new Map())
   const [drawCount, setDrawCount] = useState(1)
+  const [drawCountInput, setDrawCountInput] = useState('1')
   const [drawnCards, setDrawnCards] = useState<number[]>([])
   const [showCardList, setShowCardList] = useState(false)
   const [showWinningList, setShowWinningList] = useState(false)
@@ -431,7 +432,10 @@ function App() {
             </button>
             <button
               className="edit-button"
-              onClick={() => setShowDrawCountInput(true)}
+              onClick={() => {
+                setDrawCountInput(drawCount.toString())
+                setShowDrawCountInput(true)
+              }}
               disabled={isDrawing || cards.length <= 1}
               onMouseEnter={() => setHoverTooltip('Set draw count')}
               onMouseLeave={() => setHoverTooltip('')}
@@ -526,17 +530,26 @@ function App() {
                 type="number"
                 min="1"
                 max={cards.length}
-                value={drawCount}
-                onChange={(e) => setDrawCount(Math.max(1, Math.min(cards.length, parseInt(e.target.value) || 1)))}
+                value={drawCountInput}
+                onChange={(e) => setDrawCountInput(e.target.value)}
                 placeholder="Enter draw count"
                 autoFocus
               />
             </div>
             <div className="draw-count-modal-footer">
-              <button className="draw-count-cancel" onClick={() => setShowDrawCountInput(false)}>
+              <button className="draw-count-cancel" onClick={() => {
+                setDrawCountInput(drawCount.toString())
+                setShowDrawCountInput(false)
+              }}>
                 Cancel
               </button>
-              <button className="draw-count-confirm" onClick={() => setShowDrawCountInput(false)}>
+              <button className="draw-count-confirm" onClick={() => {
+                const newCount = parseInt(drawCountInput) || 1
+                const validCount = Math.max(1, Math.min(cards.length, newCount))
+                setDrawCount(validCount)
+                setDrawCountInput(validCount.toString())
+                setShowDrawCountInput(false)
+              }}>
                 Confirm
               </button>
             </div>
